@@ -11,6 +11,7 @@ import KeyKeyEngine
 //   - selectCandidate: choose candidates[index] (no-op if out of range).
 //   - backspace: edit/delete within the current composition.
 //   - commit: finalize the composition, returning the text to insert, and reset.
+//   - pendingUsage: the candidate-list usage a commit would credit, valid only BEFORE commit().
 protocol InputEngine: AnyObject {
     func handleKey(_ key: Character) -> Bool
     var composingText: String { get }
@@ -18,6 +19,14 @@ protocol InputEngine: AnyObject {
     func selectCandidate(_ index: Int)
     func backspace()
     func commit() -> String
+    /// What committing right now would credit to the adaptive-ordering store: the candidate about
+    /// to be committed, paired with the identity of the list it is being picked from.
+    ///
+    /// Part of the protocol so no engine can be driven by `handle()` without answering it, and
+    /// read BEFORE `commit()` at the single call site that inserts into the client — `commit()`
+    /// clears the code/nodes this is derived from, so afterwards it is empty. Empty is also the
+    /// honest answer for a list with nothing to reorder.
+    var pendingUsage: [CandidateUsage] { get }
 }
 
 // CangjieEngine matches the protocol surface: selectCandidate sets the chosen glyph and
@@ -37,6 +46,12 @@ protocol PhraseComposingEngine: InputEngine {
     var cursorReading: String? { get }
 }
 
-// PinyinEngine already exposes the full InputEngine surface plus cursor movement.
-extension PinyinEngine: InputEngine {}
+// PinyinEngine already exposes the full InputEngine surface plus cursor movement, except
+// `pendingUsage`: 拼音 candidate ranking is deliberately OUT of the per-list adaptive-ordering
+// change, so it credits nothing to that store and keeps ranking off the per-character store it
+// always used (see UserFrequency and InputController.userRank). Empty here is the honest answer —
+// not a stub — and it keeps the single commit call site uniform across every engine.
+extension PinyinEngine: InputEngine {
+    var pendingUsage: [CandidateUsage] { [] }
+}
 extension PinyinEngine: PhraseComposingEngine {}

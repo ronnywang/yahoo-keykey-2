@@ -5,12 +5,18 @@ import DragonKit
 
 @objc(InputController)
 final class InputController: IMKInputController {
-    // User learning: persisted selection-count store providing a live ranking bonus for
-    // Cangjie/Simplex candidates, so committed characters surface higher next time.
+    // Adaptive ordering for 倉頡/速成/聯想: persisted per-candidate-list commit counts, so a
+    // candidate the user has committed more often in a list leads that list next time.
+    private let candidateUsage: CandidateUsageStore
+    // The per-character store 拼音 ranks by. 拼音 is OUT of the per-list change, so this stays
+    // exactly as it was: read for 拼音 ordering, and written on every single-character commit the
+    // way it always was, so 拼音's learning neither resets nor stops.
     private let userFreq: UserFrequency
-    // The gated learning bonus handed to the engines, and read again when ordering 聯想. Stored
-    // rather than local to init because the association path needs the same closure — one gate,
-    // so the setting cannot apply to composition candidates and not to suggestions.
+    // The gated count handed to the 倉頡/速成 engines, and read again when ordering 聯想. Stored
+    // rather than local to init because the association path needs the same closure — one gate, so
+    // the setting cannot apply to composition candidates and not to suggestions.
+    private let usageCount: (CandidateListKey, String) -> Int
+    // The gated per-character bonus handed to 拼音, unchanged from before this release.
     private let userRank: (Character) -> Double
     private let associatedPhrases: AssociatedPhrases
     // Traditional→Simplified character converter, applied only when Preferences.outputSimplifiedEnabled.
@@ -37,16 +43,27 @@ final class InputController: IMKInputController {
     override init!(server: IMKServer!, delegate: Any!, client inputClient: Any!) {
         // All heavy resources are loaded ONCE in SharedResources and shared across every
         // controller (IMK creates one InputController per client/app). These reads do not
-        // copy: the engine tables are value-type structs and userFreq is a shared class.
+        // copy: the engine tables are value-type structs and the usage store is a shared class.
         let shared = SharedResources.shared
         self.associatedPhrases = shared.associatedPhrases
         self.hanConvertFilter = shared.hanConvertFilter
+        self.candidateUsage = shared.candidateUsage
         self.userFreq = shared.userFreq
 
-        // Live user-learning bonus; the closure consults the shared store on every sort, so a
-        // freshly-committed character promotes without rebuilding the engine. It also reads
+        // Live committed-usage count; the closure consults the shared store on every sort, so a
+        // freshly-committed candidate leads without rebuilding the engine. It also reads
         // Preferences on every call, so turning 依選字習慣調整候選字順序 off applies to the next
-        // composition — no engine rebuild and no notification needed (issue #85).
+        // composition — no engine rebuild and no notification needed (issues #85, #130).
+        let usageCount: (CandidateListKey, String) -> Int = { list, candidate in
+            AdaptiveCandidateOrder.count(of: candidate, in: list,
+                                         enabled: Preferences.adaptiveCandidateOrderEnabled,
+                                         stored: shared.candidateUsage.count(of:in:))
+        }
+        self.usageCount = usageCount
+
+        // 拼音's live per-character bonus, exactly as before: consulted on every walk, gated by
+        // the same setting. Kept because 拼音 candidate ranking is out of scope for the per-list
+        // change and must behave as it does on the previous release.
         let userRank: (Character) -> Double = {
             AdaptiveCandidateOrder.bonus(for: $0,
                                          enabled: Preferences.adaptiveCandidateOrderEnabled,
@@ -56,14 +73,19 @@ final class InputController: IMKInputController {
 
         // The input-method registry. Each module's makeEngine reads the shared tables and
         // rank LIVE, so rebuilding an engine after a 倉頡版本 change picks up the new table
-        // (三代 uses an empty cangjieRank → the table's native order is preserved).
+        // (三代 uses an empty cangjieRank → the table's native order is preserved). The version
+        // is read the same way and becomes part of every list identity 倉頡/速成 report, so
+        // 三代 and 五代 counts stay in separate lists. 拼音 takes the per-character bonus instead:
+        // its ranking is out of scope for the per-list change.
         // To add a method: append a module here and an Info.plist input mode — nothing else.
         let modules = [
             InputMethodModule(modeSuffix: "Cangjie", displayName: "倉頡") {
-                CangjieEngine(table: shared.cangjieTable, characterRank: shared.cangjieRank, userRank: userRank)
+                CangjieEngine(table: shared.cangjieTable, characterRank: shared.cangjieRank,
+                              tableVersion: Preferences.cangjieVersion.rawValue, usageCount: usageCount)
             },
             InputMethodModule(modeSuffix: "Simplex", displayName: "速成") {
-                SimplexEngine(table: shared.simplexTable, characterRank: shared.cangjieRank, userRank: userRank)
+                SimplexEngine(table: shared.simplexTable, characterRank: shared.cangjieRank,
+                              tableVersion: Preferences.cangjieVersion.rawValue, usageCount: usageCount)
             },
             InputMethodModule(modeSuffix: "Pinyin", displayName: "拼音") {
                 // Cheap: reads the currently-acquired index (empty until a controller enters
@@ -366,12 +388,25 @@ final class InputController: IMKInputController {
                     // Associations are full phrases that START with the just-committed
                     // character (already in the document), so insert only the remainder
                     // after it (好 + association "好像" -> insert "像", giving 好像).
-                    let suffix = KeyEventPolicy.associationSuffix(associations[index])
+                    let phrase = associations[index]
+                    let suffix = KeyEventPolicy.associationSuffix(phrase)
                     clearAssociations()
                     if !suffix.isEmpty {
                         client.insertText(applyHanConvert(suffix), replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
-                        // Learn the continuation the user picked (係 from 關係), so it surfaces
-                        // earlier both here and when typed by code. Same store, same gate.
+                        // Count the WHOLE phrase the user picked (關係, not the 係 that was
+                        // inserted or the 係 a continuation-only display would have shown), in the
+                        // list its trigger character opens. That list is shared by 倉頡 and 速成.
+                        // Same store, same gate. Merely showing or dismissing suggestions counts
+                        // nothing — only this branch, the one that commits a suggestion, records.
+                        for usage in AdaptiveCandidateOrder.usageToRecord(
+                            forAssociationPhrase: phrase,
+                            enabled: Preferences.adaptiveCandidateOrderEnabled) {
+                            candidateUsage.record(usage.candidate, in: usage.list)
+                        }
+                        // ALSO the continuation character into the per-character store, exactly
+                        // as before this release. That store no longer orders 聯想 — the line
+                        // above does — but it still orders 拼音, so dropping this would silently
+                        // change 拼音's learning, which is out of scope here.
                         if let ch = AdaptiveCandidateOrder.characterToLearn(
                             fromAssociationSuffix: suffix,
                             enabled: Preferences.adaptiveCandidateOrderEnabled) {
@@ -591,12 +626,28 @@ final class InputController: IMKInputController {
     @discardableResult
     private func commitCurrent(to client: IMKTextInput, offerAssociations: Bool = false) -> Bool {
         resetCompositionState()
+        // Read the usage to credit BEFORE committing: commit() clears the code (倉頡/速成) or the
+        // nodes (拼音) that identify which candidate list the pick came from, so afterwards there
+        // is nothing left to attribute it to. Every commit path that reaches the client goes
+        // through this one method — Space, Return, 1–9, the 速成 third-radical auto-commit,
+        // punctuation, focus loss — so capturing it here covers all of them, and any future path
+        // inherits it for free. 拼音 reports nothing (see InputEngine): it is out of scope.
+        let pending = engine.pendingUsage
         let text = engine.commit()
         if !text.isEmpty {
             client.insertText(applyHanConvert(text), replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
-            // User learning: remember single-character selections so they rank higher next time.
-            // Nothing is recorded while adaptive ordering is off — the setting pauses learning as
-            // well as ignoring it, so a user who turned it off is not still being counted.
+            // Adaptive ordering: count this commit within its own candidate list, so a candidate
+            // the user commits more often leads that list next time. Nothing is recorded while
+            // adaptive ordering is off — the setting pauses counting as well as ignoring counts,
+            // so a user who turned it off is not still being counted.
+            for usage in AdaptiveCandidateOrder.usageToRecord(
+                pending, enabled: Preferences.adaptiveCandidateOrderEnabled) {
+                candidateUsage.record(usage.candidate, in: usage.list)
+            }
+            // ALSO the per-character count, exactly as before this release. 倉頡/速成 no longer
+            // order by it, but 拼音 does, and on the previous release every single-character
+            // commit from any mode fed 拼音's ranking. Keeping that is what makes 拼音 behave
+            // identically instead of quietly losing the input it learns from.
             if let ch = AdaptiveCandidateOrder.characterToLearn(
                 fromCommitted: text, enabled: Preferences.adaptiveCandidateOrderEnabled) {
                 userFreq.record(ch)
@@ -607,7 +658,9 @@ final class InputController: IMKInputController {
         // After an explicit user commit of a single character, offer associated phrases (聯想).
         // System-driven commits (focus loss, mode switch) pass offerAssociations: false and stay idle.
         if offerAssociations, Preferences.associatedPhrasesEnabled, text.count == 1, let first = text.first {
-            let phrases = associatedPhrases.associations(for: first, userRank: userRank)
+            let phrases = associatedPhrases.associations(for: first) {
+                usageCount(.association(trigger: first), $0)
+            }
             if !phrases.isEmpty {
                 associations = phrases
                 candidatePage = 0
