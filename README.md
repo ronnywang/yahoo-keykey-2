@@ -1,13 +1,13 @@
 <div align="center">
   <img src="App/AppIcon.png" width="160" height="160" alt="Yahoo! KeyKey 2 app icon">
   <h1>Yahoo! KeyKey 2</h1>
-  <p><strong>Cangjie (倉頡) &amp; Simplex (速成) Traditional-Chinese input method for macOS</strong></p>
+  <p><strong>Cangjie (倉頡), Simplex (速成) &amp; Zhuyin (注音) Traditional-Chinese input method for macOS</strong></p>
 </div>
 
 **Yahoo! KeyKey 2** is an independent, open-source rebuild — in Swift — of the classic
 **Yahoo! KeyKey (Yahoo!奇摩輸入法)** Traditional-Chinese input method that many Mac users
-loved. It brings the familiar Cangjie (倉頡) and Simplex (速成) typing experience back to
-modern macOS — native, fast, and free.
+loved. It brings the familiar Cangjie (倉頡), Simplex (速成) and Zhuyin (注音／ㄅ半) typing
+experience back to modern macOS — native, fast, and free.
 
 [![Download](https://img.shields.io/badge/download-latest-brightgreen?style=flat-square)](https://github.com/teddychan/yahoo-keykey-2/releases/latest)
 ![Platform](https://img.shields.io/badge/platform-macOS-blue?style=flat-square)
@@ -21,6 +21,7 @@ modern macOS — native, fast, and free.
 - [Install](#install)
 - [Features](#features)
 - [Cangjie generation (倉頡版本)](#cangjie-generation-倉頡版本)
+- [注音 (ㄅ半)](#注音-ㄅ半)
 - [Troubleshooting](#troubleshooting)
 - [Building from source](#building-from-source)
 - [Tests](#tests)
@@ -57,8 +58,9 @@ updated automatically on every release.
 2. Move `YahooKeyKey2.app` into `~/Library/Input Methods/` — create the folder if it is not
    there.
 3. **Log out and back in.**
-4. Add the input source under **System Settings ▸ Keyboard ▸ Input Sources ▸ + ▸
-   Traditional Chinese** → **倉頡** and/or **速成**.
+4. Add the input source: **System Settings ▸ Keyboard**, then **Edit…** beside **Input Sources**
+   (the `+` is inside that sheet, not on the settings page), **+ ▸ Chinese, Traditional** →
+   **倉頡**, **速成**, **注音** and/or **拼音**.
 5. Press **⌃Space** to switch to Yahoo! KeyKey 2 and start typing. Space or `1–9` picks a
    candidate; the arrow keys page through them.
 
@@ -95,17 +97,22 @@ rm -rf ~/Library/HTTPStorages/com.dragonapp.inputmethod.yahoo-keykey
 
 - **倉頡 and 速成** — both classic modes, with `*` as a wildcard for when you cannot remember
   every radical.
-- **拼音 (Pinyin)** — a third mode that builds whole phrases from pinyin without tones; `'`
-  splits ambiguous syllables, so `xi'an` gives 西安.
+- **注音 (Zhuyin, ㄅ半)** — the classic phonetic method, one character at a time: type the
+  symbols, end the syllable with a tone (**Space** is the first tone), pick with `1–9`. 標準
+  (大千) and 倚天 keyboards, switchable from the input menu. See
+  [注音 (ㄅ半)](#注音-ㄅ半) below.
+- **拼音 (Pinyin)** — builds whole phrases from pinyin without tones; `'` splits ambiguous
+  syllables, so `xi'an` gives 西安.
 - **Candidates that learn, or stay put** — by default the characters you pick move up the list.
-  Turn **依選字習慣調整候選字順序** off in Settings and the built-in order stands, across all
-  three modes and 聯想字詞 alike.
+  Turn **依選字習慣調整候選字順序** off in Settings and the built-in order stands, across every
+  mode and 聯想字詞 alike.
 - **Associated words (聯想字詞)** — after you commit a character, KeyKey suggests the words that
   usually follow, pickable with `1–9` or `Shift + 1–9`.
 - **繁 → 簡 and full-width punctuation** — toggle both straight from the input menu.
 - **Candidate window that follows your cursor** — never clipped off-screen, paged with the arrow
   keys, Space or Page Up / Page Down, at whatever size you set.
-- **See the code (反查／拆碼提示)** — show each candidate's 倉頡 code, or its pinyin reading.
+- **See the code (反查／拆碼提示)** — show each candidate's 倉頡 code, or its pinyin reading — so
+  in 注音 you can look up how to type the same character in 倉頡.
 - **臨時英數** — hold **Shift** and press a letter to type that one English letter without
   switching input source.
 - **Backup and restore** — save your settings to a folder from **設定…** and bring them back
@@ -140,6 +147,32 @@ and the same setting turns its learning on and off.
 Yahoo! KeyKey's *associated-phrase* ranking cannot be reproduced — that data was never
 open-sourced — so associations use Yahoo! KeyKey 2's own ordering in both modes.
 
+## 注音 (ㄅ半)
+
+The **ㄅ半** method, as it has always worked: one syllable, one character. Type the 注音 symbols,
+finish the syllable with a tone, and the candidate window opens; `1–9` picks, Space and the arrow
+keys page, and typing the next character's first symbol commits the one on screen so you can run
+on without pressing Enter. 聯想字詞 follows every commit, exactly as in 倉頡 and 速成.
+
+| | |
+|---|---|
+| **First tone** | **Space** — the one tone with no key of its own |
+| **Other tones** | 大千 `6` ˊ · `3` ˇ · `4` ˋ · `7` ˙  ·  倚天 `2` ˊ · `3` ˇ · `4` ˋ · `1` ˙ |
+| **Pick a candidate** | `1–9` · **Return** takes the first on the page · Space pages (and takes the first when there is only one page) |
+| **Fix a wrong tone** | **Backspace** removes the tone and leaves the symbols |
+| **聯想字詞** | **Shift + 1–9** (a bare number types 注音, so it cannot also pick) |
+| **，。** | **Shift + `,`** and **Shift + `.`** — `,` and `.` themselves type ㄝ and ㄡ |
+
+Choose the keyboard in **設定… ▸ 輸入方式 ▸ 注音鍵盤**, or straight from the input menu while 注音
+is active. **標準（大千）** is the default: the layout printed on Taiwanese keyboards, and the one
+the original Yahoo! KeyKey shipped. **倚天** puts the symbols on the letters that spell them.
+許氏 and the 26-key layouts are not offered — they put two symbols on one key, which needs
+disambiguation rules this mode does not have.
+
+Candidates come from the original Yahoo! KeyKey ㄅ半 table (`bpmf-ext.cin`), in its own order —
+the everyday character for a reading leads it, and there is no dictionary re-ranking on top. What
+you pick is then learned per reading, the same way 倉頡 learns per code.
+
 ## Troubleshooting
 
 Common problems, and what each one turns out to be, are collected in
@@ -152,8 +185,10 @@ Common problems, and what each one turns out to be, are collected in
 | A character's code is not what you expect | [#3](known_issues.md#3-a-characters-code-is-not-what-i-expect) |
 | Space pages instead of accepting your code | [#4](known_issues.md#4-space-pages-instead-of-accepting-my-code) |
 | Typing a number inserts a word | [#5](known_issues.md#5-typing-a-number-inserts-a-word-instead) |
+| In 注音, `,` and `.` type ㄝ and ㄡ | [#6](known_issues.md#6-in-注音-the-comma-and-period-keys-type-ㄝ-and-ㄡ) |
+| In 注音, a tone key picks a candidate | [#7](known_issues.md#7-in-注音-my-tone-key-picks-a-candidate) |
 
-That file also lists what has **[already been fixed](known_issues.md#6-already-fixed-in-earlier-versions)**,
+That file also lists what has **[already been fixed](known_issues.md#8-already-fixed-in-earlier-versions)**,
 so check your version before reporting a bug. Anything else —
 [open an issue](https://github.com/teddychan/yahoo-keykey-2/issues).
 
@@ -181,8 +216,9 @@ from [`.github/workflows/release.yml`](.github/workflows/release.yml) on a `v*` 
 
 The suite spans two SwiftPM packages. **KeyKeyEngine** covers the 倉頡 and 速成 tables (both 五代
 and 三代), code lookup and wildcard matching, frequency ranking and the adaptive walker,
-associated phrases (聯想字詞), 拼音 segmentation, and 繁 → 簡 conversion. **KeyKeyApp** covers
-preferences, key-event policy, and input-engine conformance across all three modes. CI runs both
+associated phrases (聯想字詞), 注音 keyboards / syllable building / the ㄅ半 table, 拼音
+segmentation, and 繁 → 簡 conversion. **KeyKeyApp** covers preferences, key-event policy, and
+input-engine conformance across all four modes. CI runs both
 on every push and pull request to `main`.
 
 [![Tests](https://github.com/teddychan/yahoo-keykey-2/actions/workflows/tests.yml/badge.svg)](https://github.com/teddychan/yahoo-keykey-2/actions/workflows/tests.yml)
@@ -194,9 +230,9 @@ swift test --package-path Packages/KeyKeyApp
 
 | Metric | Value |
 |---|---|
-| Test cases | 281 passing (202 engine, 79 app) |
-| Line coverage | 98.0% of `KeyKeyEngine`, 100% of `KeyKeyApp` |
-| Measured on | v2.13.2 (`08b6f1c`), Swift 6.3.3 |
+| Test cases | 436 passing (334 engine, 102 app) |
+| Line coverage | 97.8% of `KeyKeyEngine`, 100% of `KeyKeyApp` |
+| Measured on | v2.14.0, Swift 6.4 |
 
 One further engine test (`RealPinyinWalkerTests`) skips itself unless `Resources/data.txt` has
 been generated by `./tools/build-lm.sh`. Coverage is measured with `--enable-code-coverage` over

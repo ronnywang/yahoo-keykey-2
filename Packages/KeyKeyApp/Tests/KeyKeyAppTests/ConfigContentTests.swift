@@ -88,18 +88,17 @@ final class ConfigContentTests: XCTestCase {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         XCTAssertEqual(content.displayVersion, DragonVersion.display(short ?? "1.0.0"))
         XCTAssertTrue(content.displayVersion.hasPrefix("v"))
-        XCTAssertEqual(content.date, "2026-09-04")
+        XCTAssertEqual(content.date, "2026-09-19")
     }
 
-    // 2.13.4 is [.fixed, .changed]: adaptive candidate ordering now follows how often you commit
-    // each candidate in its own candidate list, so a rare character you pick leads the list next
-    // time even when the built-in dictionary has never heard of it — which it previously could
-    // never do at any number of picks (issue #130). `.fixed` leads, because what a user meets is
-    // a behaviour that was reported as broken; the one `.changed` entry is the consequence they
-    // notice on first launch, that the learning history starts fresh.
+    // 2.14.0 is [.added, .changed]: the release IS an input method — 注音 (ㄅ半), with a choice of
+    // 標準（大千）or 倚天 keyboard — so `.added` leads with one entry for the method and one for the
+    // keyboard. The single `.changed` entry covers the two keys that behave differently in 注音 and
+    // would otherwise be read as bugs: `,` and `.` type ㄝ and ㄡ, and 聯想字詞 needs Shift + a
+    // number because the number row types 注音.
     //
-    // 2.13.3's `.changed2` (the rename to "Yahoo! KeyKey 2") is gone from all seven .strings
-    // files rather than left stranded with no section to render it — see WhatsNewConfig.
+    // 2.13.4's `.fixed1` is gone from all seven .strings files rather than left stranded with no
+    // section to render it — see WhatsNewConfig.
     //
     // Entry KEYS are pinned, not just kinds and counts, because kinds and counts had stopped
     // catching anything: 2.11.3, 2.11.4 and the 2.11.5 draft were all [.changed] with one entry —
@@ -110,12 +109,13 @@ final class ConfigContentTests: XCTestCase {
     // text SAYS is the release gate's job — it diffs every locale's .strings file — so between
     // them a stale pane cannot ship.
     @MainActor
-    func testWhatsNewAnnouncesTheAdaptiveOrderingFixAndTheFreshHistory() {
+    func testWhatsNewAnnouncesTheZhuyinMethodAndItsTwoKeyChanges() {
         let content = WhatsNewConfig.content
-        XCTAssertEqual(content.sections.map(\.kind), [.fixed, .changed])
-        XCTAssertEqual(content.sections.map(\.entries.count), [1, 1])
+        XCTAssertEqual(content.sections.map(\.kind), [.added, .changed])
+        XCTAssertEqual(content.sections.map(\.entries.count), [2, 1])
         XCTAssertEqual(content.sections.flatMap(\.entries), [
-            L("app.whatsNew.fixed1"),
+            L("app.whatsNew.added1"),
+            L("app.whatsNew.added2"),
             L("app.whatsNew.changed1"),
         ])
     }

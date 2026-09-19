@@ -6,36 +6,35 @@ import DragonKit
 // binary isn't. That makes the entries and the date the only things to keep in sync with
 // CHANGELOG.md on release.
 //
-// 2.13.4 carries one user-facing change: adaptive candidate ordering is now decided by how often
-// you commit each candidate in its own candidate list, so picking a rare character puts it in
-// front of everything you have not picked — including characters the built-in dictionary has
-// never heard of, which it previously could never overtake at any number of picks (issue #130).
+// 2.14.0 adds an input method: 注音 (ㄅ半), the classic one-syllable-one-character phonetic
+// method, with a choice of 標準（大千）or 倚天 keyboard.
 //
-// Announced as `.fixed`, because what a user meets is a behaviour that was reported as broken,
-// with one `.changed` entry for the consequence they will notice on first launch: the learning
-// history starts fresh. The retired store held one count per character with no record of which
-// list it was committed in, and there is no honest way to turn that into per-list history, so it
-// is left on disk untouched rather than reinterpreted.
+// Announced as `.added` — a whole method is the release — with one `.changed` entry for the two
+// keys that behave differently in 注音 and would otherwise read as bugs: `,` and `.` type ㄝ and
+// ㄡ (so ，。 move to their shifted forms), and 聯想字詞 needs Shift + a number because the number
+// row types 注音. Both are scoped to 注音; nothing changes for 倉頡, 速成 or 拼音, which is what
+// the entry says, because an existing user's first question about a release that adds a mode is
+// whether their own mode moved.
 //
-// Deliberately NOT in the notes: that the per-list store is a new file, its bounds, and the
-// internals of the ordering rule. A user meets the behaviour, not the storage — CHANGELOG.md
-// records the rest, following the fleet's rule against announcing what users cannot see.
+// Deliberately NOT in the notes: which table the candidates come from, how the readings are keyed,
+// and that the table loads on first use. A user meets the typing, not the data pipeline —
+// CHANGELOG.md and Resources/ZHUYIN-DATA-LICENSE.txt record the rest, following the fleet's rule
+// against announcing what users cannot see.
 //
-// Keys are the fleet's stable set (app.whatsNew.summary, .fixed1, .changed1, …), not named after
+// Keys are the fleet's stable set (app.whatsNew.summary, .added1, .changed1, …), not named after
 // this release's content — a release just overwrites the same keys' text in all seven .strings
-// files rather than adding new ones and stranding the last release's, which is what happened to
-// 2.13.2's `maintenanceOnly` and 2.13.1's `simplexThirdRadical` under the old per-release naming.
-// 2.13.3 used a `.changed2` for the rename to "Yahoo! KeyKey 2"; this release has only one
-// `.changed` to make, so that key is retired from all seven files rather than left stranded.
+// files rather than adding new ones and stranding the last release's. 2.13.4's `.fixed1` is
+// retired from all seven files rather than left with no section to render it.
 enum WhatsNewConfig {
     @MainActor
     static var content: WhatsNewContent {
         WhatsNewContent(
-            date: "2026-09-04",
+            date: "2026-09-19",
             summary: L("app.whatsNew.summary"),
             sections: [
-                ChangeSection(kind: .fixed, entries: [
-                    L("app.whatsNew.fixed1"),
+                ChangeSection(kind: .added, entries: [
+                    L("app.whatsNew.added1"),
+                    L("app.whatsNew.added2"),
                 ]),
                 ChangeSection(kind: .changed, entries: [
                     L("app.whatsNew.changed1"),

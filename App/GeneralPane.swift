@@ -1,5 +1,6 @@
 import SwiftUI
 import DragonKit
+import KeyKeyEngine
 
 // KeyKey's General settings pane: the real input toggles (輸出簡體字 / 全形標點 / 聯想字詞 and the
 // 聯想只顯示接續字 option), the candidate font size, the 倉頡版本 picker and 以空白鍵確認字根
@@ -55,6 +56,11 @@ private struct GeneralPaneView: View {
                     Text(L("keykey.general.cangjieV3")).tag(CangjieVersion.v3)
                 }
                 .dragonAnnotation(LocalizedStringKey(L("keykey.general.cangjieVersionHint")))
+                Picker(L("keykey.general.zhuyinLayout"), selection: $model.zhuyinLayout) {
+                    Text(L("keykey.general.zhuyinLayoutDachen")).tag(ZhuyinLayout.dachen)
+                    Text(L("keykey.general.zhuyinLayoutEten")).tag(ZhuyinLayout.eten)
+                }
+                .dragonAnnotation(LocalizedStringKey(L("keykey.general.zhuyinLayoutHint")))
                 Toggle(L("keykey.general.strokeConfirmation"), isOn: $model.strokeConfirmation)
                     .dragonAnnotation(LocalizedStringKey(L("keykey.general.strokeConfirmationHint")))
                 // Governs every input method, not just the 倉頡版本 above it — hence the explicit

@@ -189,6 +189,13 @@ if [ ! -f "$ROOT/Resources/pinyin-zhuyin.txt" ]; then
 fi
 cp "$ROOT/Resources/pinyin-zhuyin.txt" "$APP/Contents/Resources/pinyin-zhuyin.txt"
 
+echo "==> Copying bundled 注音 (ㄅ半) table (zhuyin-yahoo.txt)"
+if [ ! -f "$ROOT/Resources/zhuyin-yahoo.txt" ]; then
+  echo "ERROR: Resources/zhuyin-yahoo.txt missing; run tools/build-zhuyin-table.py first" >&2
+  exit 1
+fi
+cp "$ROOT/Resources/zhuyin-yahoo.txt" "$APP/Contents/Resources/zhuyin-yahoo.txt"
+
 echo "==> Copying bundled Han-conversion table (opencc-TSCharacters.txt)"
 if [ ! -f "$ROOT/Packages/KeyKeyEngine/Resources/opencc-TSCharacters.txt" ]; then
   echo "ERROR: Packages/KeyKeyEngine/Resources/opencc-TSCharacters.txt missing" >&2
@@ -232,8 +239,8 @@ if [[ "${KEYKEY_DEBUG_ID:-}" == "1" ]]; then
   PLIST="$APP/Contents/Info.plist"
   # Single pass moves every release-id occurrence into the .debug namespace: CFBundleIdentifier,
   # TISInputSourceID, InputMethodConnectionName, and the two ComponentInputModeDict mode ids
-  # (...Cangjie / ...Simplex). InputController matches modes by the ".Cangjie"/".Simplex" SUFFIX,
-  # which is preserved, so mode switching keeps working. SUFeedURL/SUPublicEDKey don't contain
+  # (...Cangjie / ...Simplex / ...Zhuyin / ...Pinyin). InputController matches modes by that
+  # SUFFIX, which is preserved, so mode switching keeps working. SUFeedURL/SUPublicEDKey don't contain
   # the base id, so they're untouched.
   sed -i '' "s|${RELEASE_BUNDLE_ID}|${DEBUG_BUNDLE_ID}|g" "$PLIST"
   # Distinct name in the menu bar / Input Sources picker.

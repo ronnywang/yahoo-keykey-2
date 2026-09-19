@@ -90,6 +90,20 @@ final class SettingsModel {
         }
     }
 
+    // 注音鍵盤. Stored + observation-tracked like `cangjieVersion` above (a computed forwarder
+    // would make the menu-style Picker's selection silently revert). `didSet` writes through to
+    // Preferences and posts the notification every live engine rebuilds on — the same one the
+    // input menu's 注音鍵盤 items post, so both routes to this setting behave identically.
+    // Nothing in SharedResources is reloaded: the ㄅ半 table is the same table whichever keyboard
+    // types it.
+    var zhuyinLayout: ZhuyinLayout = Preferences.zhuyinLayout {
+        didSet {
+            guard zhuyinLayout != oldValue else { return }
+            Preferences.zhuyinLayout = zhuyinLayout
+            NotificationCenter.default.post(name: .zhuyinLayoutChanged, object: nil)
+        }
+    }
+
     // 聯想選字鍵 (issue #52). Stored + observation-tracked like `cangjieVersion` above so the
     // menu-style Picker selection sticks (a computed forwarder would silently revert). `didSet`
     // writes through to Preferences, which InputController reads live on the next composition.
