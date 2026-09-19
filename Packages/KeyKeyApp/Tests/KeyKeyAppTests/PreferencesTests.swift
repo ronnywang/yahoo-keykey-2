@@ -13,7 +13,7 @@ final class PreferencesTests: XCTestCase {
         for key in ["candidateFontSize", "associatedPhrasesEnabled", "fullWidthPunctuationEnabled",
                     "outputSimplifiedEnabled", "cangjieVersion", "associationContinuationOnly",
                     "codeHintEnabled", "associationSelectionTrigger", "strokeConfirmationEnabled",
-                    "adaptiveCandidateOrderEnabled", "zhuyinLayout"] {
+                    "adaptiveCandidateOrderEnabled", "zhuyinLayout", "zhuyinAdaptiveOrderEnabled"] {
             defaults.removeObject(forKey: key)
         }
         super.tearDown()
@@ -135,6 +135,8 @@ final class PreferencesTests: XCTestCase {
         XCTAssertEqual(Preferences.associationSelectionTrigger, .number)
         // 大千 by default: the layout on a Taiwanese keyboard, and the original Yahoo! KeyKey's.
         XCTAssertEqual(Preferences.zhuyinLayout, .dachen)
+        // OFF by default, unlike every other mode — a ㄅ半 typist's candidate order must not move.
+        XCTAssertFalse(Preferences.zhuyinAdaptiveOrderEnabled)
     }
 
     func testAssociationTriggerUnknownRawFallsBackToNumber() {
@@ -142,6 +144,8 @@ final class PreferencesTests: XCTestCase {
         XCTAssertEqual(Preferences.associationSelectionTrigger, .number)
         // 大千 by default: the layout on a Taiwanese keyboard, and the original Yahoo! KeyKey's.
         XCTAssertEqual(Preferences.zhuyinLayout, .dachen)
+        // OFF by default, unlike every other mode — a ㄅ半 typist's candidate order must not move.
+        XCTAssertFalse(Preferences.zhuyinAdaptiveOrderEnabled)
     }
 
     func testAssociationTriggerAbsentFallsBackToNumber() {
@@ -149,6 +153,8 @@ final class PreferencesTests: XCTestCase {
         XCTAssertEqual(Preferences.associationSelectionTrigger, .number)
         // 大千 by default: the layout on a Taiwanese keyboard, and the original Yahoo! KeyKey's.
         XCTAssertEqual(Preferences.zhuyinLayout, .dachen)
+        // OFF by default, unlike every other mode — a ㄅ半 typist's candidate order must not move.
+        XCTAssertFalse(Preferences.zhuyinAdaptiveOrderEnabled)
     }
 
     func testAssociationTriggerRawValues() {
@@ -168,7 +174,7 @@ final class PreferencesTests: XCTestCase {
         for key in ["candidateFontSize", "associatedPhrasesEnabled", "fullWidthPunctuationEnabled",
                     "outputSimplifiedEnabled", "cangjieVersion", "associationContinuationOnly",
                     "codeHintEnabled", "associationSelectionTrigger", "strokeConfirmationEnabled",
-                    "adaptiveCandidateOrderEnabled", "zhuyinLayout"] {
+                    "adaptiveCandidateOrderEnabled", "zhuyinLayout", "zhuyinAdaptiveOrderEnabled"] {
             defaults.removeObject(forKey: key)
         }
         Preferences.registerDefaults()
@@ -187,6 +193,8 @@ final class PreferencesTests: XCTestCase {
         XCTAssertEqual(Preferences.associationSelectionTrigger, .number)
         // 大千 by default: the layout on a Taiwanese keyboard, and the original Yahoo! KeyKey's.
         XCTAssertEqual(Preferences.zhuyinLayout, .dachen)
+        // OFF by default, unlike every other mode — a ㄅ半 typist's candidate order must not move.
+        XCTAssertFalse(Preferences.zhuyinAdaptiveOrderEnabled)
         XCTAssertEqual(Preferences.candidateFontSize, 18)    // defaultFontSize
     }
 
@@ -201,6 +209,13 @@ final class PreferencesTests: XCTestCase {
         XCTAssertEqual(CangjieVersion(rawValue: "5"), .v5)
         XCTAssertEqual(CangjieVersion(rawValue: "3"), .v3)
         XCTAssertNil(CangjieVersion(rawValue: "x"))
+    }
+
+    func testZhuyinAdaptiveOrderRoundTrips() {
+        Preferences.zhuyinAdaptiveOrderEnabled = true
+        XCTAssertTrue(Preferences.zhuyinAdaptiveOrderEnabled)
+        Preferences.zhuyinAdaptiveOrderEnabled = false
+        XCTAssertFalse(Preferences.zhuyinAdaptiveOrderEnabled)
     }
 
     // MARK: zhuyinLayout (注音鍵盤)

@@ -109,15 +109,31 @@ Four branches in `handle()`, each guarded by a cast so no other method is affect
    whatever 聯想選字鍵 says, because a bare digit there is a 注音 keystroke the user means. Every
    other method keeps the configured trigger.
 
-## 4. Learning
+## 4. Learning — present, but off by default
 
 `CandidateListKey.zhuyin(reading:)` — a new case, so a reading's list is learned on its own,
-exactly as a 倉頡 code is, under the one 依選字習慣調整候選字順序 setting. The layout is **not** part
-of the identity: 大千 and 倚天 are two ways to type the same ㄕˋ and must share what they learn.
-No table version either — one ㄅ半 table ships.
+exactly as a 倉頡 code is. The layout is **not** part of the identity: 大千 and 倚天 are two ways to
+type the same ㄕˋ and must share what they learn. No table version either — one ㄅ半 table ships.
+
+It is gated by its own preference, `zhuyinAdaptiveOrderEnabled`, **off** while every other mode
+learns by default (`AdaptiveCandidateOrder.learns(_:enabled:zhuyinEnabled:)`). That inversion was
+not the original design; it came from the first user, a ㄅ半 typist of forty years, hitting it
+within an hour: 是 and 式 sat at 8 and 7 commits under ㄕˋ, so the top slot changed hands every few
+sentences. The reasoning:
+
+- ㄅ半 is typed **without looking** — the reading, then the digit that character sits on. Order is
+  not presentation there, it is the interface; moving it is indistinguishable from a typo.
+- 注音's lists are long where 倉頡's are short. A 倉頡 code answers with two or three characters, so
+  promoting the one you pick is nearly always right. ㄕˋ answers with 141, several in constant use.
+- The bundled table's order **is** the original Yahoo! KeyKey's, so an unlearned 注音 hands a
+  returning user the exact arrangement their fingers already know. Learning can only move it away
+  from that.
+
+Subordinate to the main setting, so 依選字習慣調整候選字順序 off still means nothing learns anywhere.
 
 ## 5. Settings
 
+Two preferences. `zhuyinAdaptiveOrderEnabled` is above; the other is
 `Preferences.zhuyinLayout`, defaulting to 大千 (the layout on a Taiwanese keyboard, and the original
 Yahoo! KeyKey's default). It is typed as the engine's own `ZhuyinKeyboardLayout.Identifier` rather
 than a second app-level enum over the same raw strings. Changing it — from 設定… ▸ 輸入方式 or from

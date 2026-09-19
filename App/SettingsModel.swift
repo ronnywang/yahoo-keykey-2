@@ -76,6 +76,13 @@ final class SettingsModel {
         }
     }
 
+    // 注音也依選字習慣調整候選字順序. A plain toggle, so a computed forwarder is right —
+    // InputController reads Preferences live on every sort and every commit.
+    var zhuyinAdaptiveOrder: Bool {
+        get { Preferences.zhuyinAdaptiveOrderEnabled }
+        set { Preferences.zhuyinAdaptiveOrderEnabled = newValue }
+    }
+
     // 倉頡版本 (Cangjie table). This is a STORED, observation-tracked property (seeded from
     // Preferences at init) — NOT a computed forwarder like the toggles above. A menu-style
     // Picker bound to an @Observable *computed* property silently reverts its selection (the

@@ -67,6 +67,11 @@ private struct GeneralPaneView: View {
                 // 倉頡/速成/拼音 list in the hint rather than a position that implies otherwise.
                 Toggle(L("keykey.general.adaptiveCandidateOrder"), isOn: $model.adaptiveCandidateOrder)
                     .dragonAnnotation(LocalizedStringKey(L("keykey.general.adaptiveCandidateOrderHint")))
+                // Subordinate to the toggle above (and off by default), so it sits directly under
+                // it rather than with the other 注音 settings.
+                Toggle(L("keykey.general.zhuyinAdaptiveOrder"), isOn: $model.zhuyinAdaptiveOrder)
+                    .dragonAnnotation(LocalizedStringKey(L("keykey.general.zhuyinAdaptiveOrderHint")))
+                    .disabled(!model.adaptiveCandidateOrder)
             }
 
             DragonSection(LocalizedStringKey(L("keykey.general.language"))) {

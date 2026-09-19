@@ -57,6 +57,7 @@ final class InputController: IMKInputController {
         let usageCount: (CandidateListKey, String) -> Int = { list, candidate in
             AdaptiveCandidateOrder.count(of: candidate, in: list,
                                          enabled: Preferences.adaptiveCandidateOrderEnabled,
+                                         zhuyinEnabled: Preferences.zhuyinAdaptiveOrderEnabled,
                                          stored: shared.candidateUsage.count(of:in:))
         }
         self.usageCount = usageCount
@@ -726,7 +727,8 @@ final class InputController: IMKInputController {
             // adaptive ordering is off — the setting pauses counting as well as ignoring counts,
             // so a user who turned it off is not still being counted.
             for usage in AdaptiveCandidateOrder.usageToRecord(
-                pending, enabled: Preferences.adaptiveCandidateOrderEnabled) {
+                pending, enabled: Preferences.adaptiveCandidateOrderEnabled,
+                zhuyinEnabled: Preferences.zhuyinAdaptiveOrderEnabled) {
                 candidateUsage.record(usage.candidate, in: usage.list)
             }
             // ALSO the per-character count, exactly as before this release. 倉頡/速成 no longer

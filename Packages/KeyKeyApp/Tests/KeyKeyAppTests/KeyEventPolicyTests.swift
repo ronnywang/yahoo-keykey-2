@@ -62,6 +62,7 @@ final class KeyEventPolicyTests: XCTestCase {
 
     func testCountIsTheStoredCountWhenEnabled() {
         XCTAssertEqual(AdaptiveCandidateOrder.count(of: "漏", in: Self.cangjieA, enabled: true,
+                                                    zhuyinEnabled: false,
                                                     stored: { c, _ in c == "漏" ? 7 : 0 }), 7)
     }
 
@@ -69,6 +70,7 @@ final class KeyEventPolicyTests: XCTestCase {
         // The gate must pass BOTH through untouched, or a count could be read from the wrong list.
         var seen: (String, CandidateListKey)?
         _ = AdaptiveCandidateOrder.count(of: "漏", in: Self.cangjieA, enabled: true,
+                                         zhuyinEnabled: false,
                                          stored: { c, l in seen = (c, l); return 0 })
         XCTAssertEqual(seen?.0, "漏")
         XCTAssertEqual(seen?.1, Self.cangjieA)
@@ -79,6 +81,7 @@ final class KeyEventPolicyTests: XCTestCase {
         // the built-in order, so zero leaves the 倉頡/速成 sorts, the 拼音 walker's node
         // candidates and the 聯想 sort with exactly the order they had before any learning.
         XCTAssertEqual(AdaptiveCandidateOrder.count(of: "漏", in: Self.cangjieA, enabled: false,
+                                                    zhuyinEnabled: false,
                                                     stored: { _, _ in 999 }), 0)
     }
 
@@ -87,6 +90,7 @@ final class KeyEventPolicyTests: XCTestCase {
         // setting off cannot see a list reordered by counts already on disk.
         var consulted = false
         _ = AdaptiveCandidateOrder.count(of: "漏", in: Self.cangjieA, enabled: false,
+                                         zhuyinEnabled: false,
                                          stored: { _, _ in consulted = true; return 5 })
         XCTAssertFalse(consulted)
     }
@@ -95,20 +99,20 @@ final class KeyEventPolicyTests: XCTestCase {
 
     func testCommitUsageIsRecordedWhenEnabled() {
         let pending = [CandidateUsage(list: Self.cangjieA, candidate: "漏")]
-        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: true), pending)
+        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: true, zhuyinEnabled: false), pending)
     }
 
     func testNothingIsRecordedFromACommitWhenDisabled() {
         // The setting pauses counting as well as ignoring counts — a user who turned it off is
         // not still being counted in the background.
         let pending = [CandidateUsage(list: Self.cangjieA, candidate: "漏")]
-        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: false), [])
+        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: false, zhuyinEnabled: false), [])
     }
 
     func testAnEmptyPendingUsageRecordsNothing() {
         // What an engine reports for a list with nothing to reorder, and for a commit made after
         // the engine has already reset.
-        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord([], enabled: true), [])
+        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord([], enabled: true, zhuyinEnabled: false), [])
     }
 
     func testEveryPendingRecordIsKept() {
@@ -117,7 +121,7 @@ final class KeyEventPolicyTests: XCTestCase {
             CandidateUsage(list: .simplex(tableVersion: "5", code: "a"), candidate: "曰"),
             CandidateUsage(list: .cangjieWildcard(tableVersion: "5", pattern: "h*i"), candidate: "龍"),
         ]
-        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: true), pending)
+        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: true, zhuyinEnabled: false), pending)
     }
 
     // MARK: usage recorded by a 聯想 pick
@@ -209,7 +213,7 @@ final class KeyEventPolicyTests: XCTestCase {
     func testOrderingAListIsAPureReadThatCannotRecord() {
         var reads = 0
         let count = AdaptiveCandidateOrder.count(of: "關係", in: .association(trigger: "關"),
-                                                 enabled: true,
+                                                 enabled: true, zhuyinEnabled: false,
                                                  stored: { _, _ in reads += 1; return 3 })
         XCTAssertEqual(count, 3)
         XCTAssertEqual(reads, 1, "displaying a list reads its counts once and writes nothing")
@@ -249,5 +253,57 @@ final class KeyEventPolicyTests: XCTestCase {
         XCTAssertEqual(KeyEventPolicy.associationSelectionDigit(trigger: trigger, characters: "!",
                                                                modifierFlags: [.shift], keyCode: 18),
                        1)
+    }
+
+    // MARK: 注音 learning is gated on its own, and off by default
+
+    private static let zhuyinList = CandidateListKey.zhuyin(reading: "ㄕˋ")
+
+    // The order a ㄅ半 typist has in their fingers must not move, so 注音 does not learn unless it
+    // is switched on — even while adaptive ordering is on for everything else.
+    func testZhuyinDoesNotLearnUnlessItsOwnSettingIsOn() {
+        XCTAssertEqual(AdaptiveCandidateOrder.count(of: "式", in: Self.zhuyinList, enabled: true,
+                                                    zhuyinEnabled: false,
+                                                    stored: { _, _ in 7 }), 0,
+                       "a stored count must be ignored while 注音 learning is off")
+        XCTAssertEqual(AdaptiveCandidateOrder.count(of: "式", in: Self.zhuyinList, enabled: true,
+                                                    zhuyinEnabled: true,
+                                                    stored: { _, _ in 7 }), 7)
+    }
+
+    // And it records nothing while off, so turning it on later does not reveal a history the user
+    // never asked to be kept — the same rule the main setting follows.
+    func testZhuyinRecordsNothingWhileOff() {
+        let pending = [CandidateUsage(list: Self.zhuyinList, candidate: "式")]
+        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: true,
+                                                            zhuyinEnabled: false), [])
+        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: true,
+                                                            zhuyinEnabled: true), pending)
+    }
+
+    // The 注音 gate is subordinate: with the main setting off, nothing learns anywhere.
+    func testTheMainSettingStillOverridesEverything() {
+        XCTAssertFalse(AdaptiveCandidateOrder.learns(Self.zhuyinList, enabled: false, zhuyinEnabled: true))
+        XCTAssertFalse(AdaptiveCandidateOrder.learns(Self.cangjieA, enabled: false, zhuyinEnabled: true))
+    }
+
+    // Every other mode is untouched by the 注音 gate, in both directions.
+    func testTheZhuyinGateDoesNotReachTheOtherModes() {
+        for list: CandidateListKey in [Self.cangjieA,
+                                       .simplex(tableVersion: "5", code: "a"),
+                                       .cangjieWildcard(tableVersion: "5", pattern: "h*i"),
+                                       .association(trigger: "關")] {
+            XCTAssertTrue(AdaptiveCandidateOrder.learns(list, enabled: true, zhuyinEnabled: false))
+            XCTAssertTrue(AdaptiveCandidateOrder.learns(list, enabled: true, zhuyinEnabled: true))
+        }
+    }
+
+    // A mixed batch is filtered per list rather than all-or-nothing.
+    func testAMixedBatchKeepsOnlyTheListsThatLearn() {
+        let pending = [CandidateUsage(list: Self.cangjieA, candidate: "漏"),
+                       CandidateUsage(list: Self.zhuyinList, candidate: "式")]
+        XCTAssertEqual(AdaptiveCandidateOrder.usageToRecord(pending, enabled: true,
+                                                            zhuyinEnabled: false),
+                       [CandidateUsage(list: Self.cangjieA, candidate: "漏")])
     }
 }
