@@ -88,16 +88,16 @@ final class ConfigContentTests: XCTestCase {
         let short = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
         XCTAssertEqual(content.displayVersion, DragonVersion.display(short ?? "1.0.0"))
         XCTAssertTrue(content.displayVersion.hasPrefix("v"))
-        XCTAssertEqual(content.date, "2026-09-19")
+        XCTAssertEqual(content.date, "2026-09-27")
     }
 
-    // 2.14.0 is [.added, .changed]: the release IS an input method — 注音 (ㄅ半), with a choice of
+    // 2.15.0 is [.added, .changed]: the release IS an input method — 注音 (ㄅ半), with a choice of
     // 標準（大千）or 倚天 keyboard — so `.added` leads with one entry for the method and one for the
     // keyboard. The single `.changed` entry covers the two keys that behave differently in 注音 and
     // would otherwise be read as bugs: `,` and `.` type ㄝ and ㄡ, and 聯想字詞 needs Shift + a
     // number because the number row types 注音.
     //
-    // 2.13.4's `.fixed1` is gone from all seven .strings files rather than left stranded with no
+    // 2.14.1's `.fixed1` is gone from all seven .strings files rather than left stranded with no
     // section to render it — see WhatsNewConfig.
     //
     // Entry KEYS are pinned, not just kinds and counts, because kinds and counts had stopped

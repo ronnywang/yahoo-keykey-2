@@ -8,6 +8,8 @@
 "keykey.general.input" = "Input";
 "keykey.general.outputSimplified" = "Output Simplified Chinese";
 "keykey.general.fullWidthPunctuation" = "Full-width punctuation";
+"keykey.general.shiftSpaceFullWidthSpace" = "Shift + Space types a full-width space";
+"keykey.general.shiftSpaceFullWidthSpaceHint" = "Applies to 倉頡, 速成, 注音 and 拼音: Shift + Space types a full-width space (　), the width of one Chinese character, instead of acting like Space. Anything you are composing is committed first.";
 "keykey.general.associatedPhrases" = "Associated phrases (聯想)";
 "keykey.general.associationContinuationOnly" = "Show only the continuation in associated phrases";
 "keykey.general.associationContinuationOnlyHint" = "Show 係／心／於 instead of 關係, like the original Yahoo! KeyKey. What you commit is unchanged.";
@@ -34,7 +36,7 @@
 "keykey.general.adaptiveCandidateOrderHint" = "Applies to 倉頡, 速成, 注音 and associated phrases. Every candidate list is learned on its own: within a list, the candidates you have committed more often come first, and candidates you have committed equally often keep their built-in order. A 倉頡 code with a wildcard is learned separately from a complete code, and what is learned about 聯想字詞 is shared by 倉頡, 速成 and 注音. 拼音 keeps ranking candidates exactly as it did before. Turn it off for the built-in order — 五代 and 拼音 use their built-in rankings, 三代 and 注音 the original Yahoo! KeyKey order — which also pauses counting everywhere, without erasing what you have already learned.";
 "keykey.general.language" = "Language";
 
-/* What's New pane (2.14.0) */
+/* What's New pane (2.15.0) */
 "app.whatsNew.summary" = "注音 (ㄅ半) is back, and it works the way it always did: one syllable, one character. Type the 注音 symbols, finish the syllable with a tone (Space is the first tone), and the candidates appear — 1–9 picks. Start the next character and the one on screen is committed for you, so you never press Enter mid-sentence. Choose the 標準 (大千) or 倚天 keyboard. 倉頡, 速成 and 拼音 are untouched.";
 "app.whatsNew.added1" = "The 注音 (ㄅ半) input method. Type the 注音 symbols and finish the syllable with a tone — Space is the first tone, as on any 注音 keyboard — and the candidate window opens: 1–9 picks, Space and the arrow keys page. Start the next character's first symbol and the one on screen is committed for you, so a sentence runs on without pressing Enter between characters. 聯想字詞 follows each commit, exactly as in 倉頡 and 速成. Candidates come from the original Yahoo! KeyKey ㄅ半 table in that table's own order (ㄍㄨㄛˊ → 國, ㄉㄜ˙ → 的), and what you pick is then learned for that reading alone. Add it in System Settings ▸ Keyboard: click Edit… beside Input Sources — the + is inside that sheet, not on the settings page — then + ▸ Chinese, Traditional ▸ 注音, and log out and back in as you would for any newly added input method.";
 "app.whatsNew.added2" = "A choice of 注音 keyboard: 標準 (大千) or 倚天. 大千 is the default — the layout printed on Taiwanese keyboards, and the one the original Yahoo! KeyKey shipped. Switch it in 設定… ▸ 輸入方式, or straight from the input menu while 注音 is active; it applies to the next keystroke.";

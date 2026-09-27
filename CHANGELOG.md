@@ -2,7 +2,7 @@
 
 A plain-language list of changes in each version, newest first.
 
-## 2.14.0
+## 2.15.0
 
 - **New: 注音 (ㄅ半) input method.** The classic phonetic method is back, and it works the way it
   always did — one syllable, one character. Type the 注音 symbols, finish the syllable with a tone
@@ -32,8 +32,35 @@ A plain-language list of changes in each version, newest first.
   mode, whatever **聯想選字鍵** is set to, leaving a bare number free to type ㄅ ㄉ ㄓ ㄚ ㄞ ㄢ or a
   tone. Nothing changes for 倉頡, 速成 or 拼音.
 
+- **Shift + Space (全形空白) works in 注音 too.** With **Shift + 空白鍵輸入全形空白** on, it
+  commits what Return would and then types 　, as in the other input methods; with it off,
+  Shift + Space works exactly like Space — including as the first tone.
+
 - **Uninstall's checklist no longer names individual input methods.** It said "倉頡 and 速成",
   which was already missing 拼音; it now points at Yahoo! KeyKey 2's input methods as a whole.
+
+## 2.14.1
+
+- **Added: Shift + Space can type a full-width space (　).** A new setting in **設定… ▸ 一般 ▸
+  輸入**, **Shift + 空白鍵輸入全形空白**, is off by default. Turn it on and Shift + Space types a
+  full-width space — U+3000, the width of one Chinese character, as formal Chinese typesetting
+  uses for indents and gaps — in 倉頡, 速成 and 拼音 alike, without switching input source.
+
+  If you are in the middle of typing, what Return would commit is committed first, in every
+  input method: in 倉頡 and 速成 the first candidate of the page on screen, in 拼音 the whole
+  phrase exactly as shown, including any word you re-picked. Associated-phrase suggestions on
+  screen are dismissed. With the setting off, Shift + Space works exactly like Space, as before. Thanks to
+  the reporter of [issue #135](https://github.com/teddychan/yahoo-keykey-2/issues/135).
+
+- **Fixed: Shift + a letter (臨時英數) commits the character you can see.** In 倉頡 and 速成, with
+  the candidate list paged to page 2 or later, Shift + a letter committed the first candidate of
+  page 1 — a character no longer on screen — before typing the letter. Under the 速成 code `竹戈`,
+  for example, paging to 符 籌 凡 鬼 … and pressing Shift + A typed 的a. It now commits the first
+  candidate of the page you are looking at, as Return does, so the same keys type 符a. On page 1
+  nothing changes, and 拼音 was never affected.
+
+- **There is no 2.14.0.** It was prepared but never published, so the changes above arrive
+  straight from 2.13.4 in this release.
 
 ## 2.13.4
 

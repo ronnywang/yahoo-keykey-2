@@ -6,7 +6,7 @@ import DragonKit
 // binary isn't. That makes the entries and the date the only things to keep in sync with
 // CHANGELOG.md on release.
 //
-// 2.14.0 adds an input method: 注音 (ㄅ半), the classic one-syllable-one-character phonetic
+// 2.15.0 adds an input method: 注音 (ㄅ半), the classic one-syllable-one-character phonetic
 // method, with a choice of 標準（大千）or 倚天 keyboard.
 //
 // Announced as `.added` — a whole method is the release — with one `.changed` entry for the two
@@ -19,17 +19,19 @@ import DragonKit
 // Deliberately NOT in the notes: which table the candidates come from, how the readings are keyed,
 // and that the table loads on first use. A user meets the typing, not the data pipeline —
 // CHANGELOG.md and Resources/ZHUYIN-DATA-LICENSE.txt record the rest, following the fleet's rule
-// against announcing what users cannot see.
+// against announcing what users cannot see. 2.14.1's Shift + Space notes are that release's own
+// and are not repeated here.
 //
 // Keys are the fleet's stable set (app.whatsNew.summary, .added1, .changed1, …), not named after
 // this release's content — a release just overwrites the same keys' text in all seven .strings
-// files rather than adding new ones and stranding the last release's. 2.13.4's `.fixed1` is
-// retired from all seven files rather than left with no section to render it.
+// files rather than adding new ones and stranding the last release's. This release has no `.fixed`
+// entry, so 2.14.1's `.fixed1` is retired from all seven files rather than left stranded; `.added2`
+// is new, and `.changed1` returns with this release's text.
 enum WhatsNewConfig {
     @MainActor
     static var content: WhatsNewContent {
         WhatsNewContent(
-            date: "2026-09-19",
+            date: "2026-09-27",
             summary: L("app.whatsNew.summary"),
             sections: [
                 ChangeSection(kind: .added, entries: [

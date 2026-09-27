@@ -8,6 +8,8 @@
 "keykey.general.input" = "Entrada";
 "keykey.general.outputSimplified" = "Escribir en chino simplificado";
 "keykey.general.fullWidthPunctuation" = "Puntuación de ancho completo";
+"keykey.general.shiftSpaceFullWidthSpace" = "Mayús + Espacio escribe un espacio de ancho completo";
+"keykey.general.shiftSpaceFullWidthSpaceHint" = "Se aplica a 倉頡, 速成, 注音 y 拼音: Mayús + Espacio escribe un espacio de ancho completo (　), del ancho de un carácter chino, en lugar de funcionar como Espacio. Lo que estés componiendo se confirma primero.";
 "keykey.general.associatedPhrases" = "Frases asociadas (聯想)";
 "keykey.general.associationContinuationOnly" = "Mostrar solo la continuación en las frases asociadas";
 "keykey.general.associationContinuationOnlyHint" = "Muestra 係／心／於 en lugar de 關係, como el Yahoo! KeyKey original. Lo que se confirma no cambia.";
@@ -34,7 +36,7 @@
 "keykey.general.adaptiveCandidateOrderHint" = "Se aplica a 倉頡, 速成, 注音 y a las frases asociadas. Cada lista de candidatos se aprende por separado: dentro de una lista, los candidatos que has confirmado más veces aparecen primero, y los que has confirmado igual número de veces conservan su orden original. Un código 倉頡 con comodín se aprende aparte de un código completo, y lo aprendido sobre 聯想字詞 se comparte entre 倉頡, 速成 y 注音. 拼音 sigue ordenando los candidatos exactamente como antes. Desactívalo para usar el orden original —五代 y 拼音 usan sus clasificaciones propias; 三代 y 注音, el orden original de Yahoo! KeyKey—, lo que además pausa el recuento en todas partes sin borrar lo ya aprendido.";
 "keykey.general.language" = "Idioma";
 
-/* What's New pane (2.14.0) */
+/* What's New pane (2.15.0) */
 "app.whatsNew.summary" = "注音 (ㄅ半) ha vuelto, y funciona como siempre: una sílaba, un carácter. Escribe los símbolos 注音, cierra la sílaba con un tono (Espacio es el primer tono) y aparecen los candidatos; las teclas 1–9 eligen. Empieza el carácter siguiente y el que está en pantalla se confirma solo, así que nunca pulsas Intro a mitad de frase. Puedes elegir el teclado 標準 (大千) o 倚天. 倉頡, 速成 y 拼音 no cambian en nada.";
 "app.whatsNew.added1" = "El método de entrada 注音 (ㄅ半). Escribe los símbolos 注音 y cierra la sílaba con un tono —Espacio es el primer tono, como en cualquier teclado 注音— y se abre la ventana de candidatos: 1–9 elige, y Espacio y las flechas pasan de página. Al empezar el primer símbolo del carácter siguiente, el que está en pantalla se confirma solo, de modo que una frase avanza sin pulsar Intro entre caracteres. Las 聯想字詞 aparecen tras cada confirmación, igual que en 倉頡 y 速成. Los candidatos vienen de la tabla ㄅ半 del Yahoo! KeyKey original, en el orden de esa misma tabla (ㄍㄨㄛˊ → 國, ㄉㄜ˙ → 的), y lo que eliges se aprende solo para esa lectura. Añádelo en Ajustes del Sistema ▸ Teclado: pulsa Editar… junto a Fuentes de entrada —el + está dentro de esa ventana, no en la página de ajustes— y luego + ▸ Chino tradicional ▸ 注音; después vuelve a iniciar sesión, como con cualquier método recién añadido.";
 "app.whatsNew.added2" = "Puedes elegir teclado 注音: 標準 (大千) o 倚天. 大千 es el predeterminado: la distribución impresa en los teclados taiwaneses y la que traía el Yahoo! KeyKey original. Cámbialo en 設定… ▸ 輸入方式 o directamente desde el menú de entrada mientras usas 注音; se aplica a la siguiente pulsación.";
