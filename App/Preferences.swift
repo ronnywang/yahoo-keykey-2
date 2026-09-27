@@ -130,7 +130,7 @@ enum Preferences {
         set { UserDefaults.standard.set(newValue.rawValue, forKey: Key.zhuyinLayout) }
     }
 
-    // When true (the default), each candidate the user commits in 倉頡, 速成 or 聯想 is counted
+    // When true (the default), each candidate the user commits in 倉頡, 速成, 注音 or 聯想 is counted
     // within its OWN candidate list, and the list is ordered by that count — most-committed
     // first, built-in order deciding equal counts. 拼音 is out of that scheme and keeps ranking by
     // the per-character count it always used, but the SAME flag gates it, so the toggle still
