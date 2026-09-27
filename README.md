@@ -1,13 +1,14 @@
 <div align="center">
   <img src="App/AppIcon.png" width="160" height="160" alt="Yahoo! KeyKey 2 app icon">
   <h1>Yahoo! KeyKey 2</h1>
-  <p><strong>Cangjie (倉頡), Simplex (速成) &amp; Zhuyin (注音) Traditional-Chinese input method for macOS</strong></p>
+  <p><strong>Four Traditional-Chinese input methods for macOS: Cangjie (倉頡), Simplex (速成), Zhuyin (注音) &amp; Pinyin (拼音)</strong></p>
 </div>
 
 **Yahoo! KeyKey 2** is an independent, open-source rebuild — in Swift — of the classic
 **Yahoo! KeyKey (Yahoo!奇摩輸入法)** Traditional-Chinese input method that many Mac users
-loved. It brings the familiar Cangjie (倉頡), Simplex (速成) and Zhuyin (注音／ㄅ半) typing
-experience back to modern macOS — native, fast, and free.
+loved. It brings that typing experience back to modern macOS with four input methods — **倉頡**
+(Cangjie), **速成** (Simplex), **注音** (Zhuyin, ㄅ半) and **拼音** (Pinyin) — native, fast, and
+free.
 
 [![Download](https://img.shields.io/badge/download-latest-brightgreen?style=flat-square)](https://github.com/teddychan/yahoo-keykey-2/releases/latest)
 ![Platform](https://img.shields.io/badge/platform-macOS-blue?style=flat-square)
@@ -20,8 +21,7 @@ experience back to modern macOS — native, fast, and free.
 - [Requirements](#requirements)
 - [Install](#install)
 - [Features](#features)
-- [Cangjie generation (倉頡版本)](#cangjie-generation-倉頡版本)
-- [注音 (ㄅ半)](#注音-ㄅ半)
+- [Input methods](#input-methods)
 - [Troubleshooting](#troubleshooting)
 - [Building from source](#building-from-source)
 - [Tests](#tests)
@@ -95,17 +95,17 @@ rm -rf ~/Library/HTTPStorages/com.dragonapp.inputmethod.yahoo-keykey
 
 ## Features
 
-- **倉頡 and 速成** — both classic modes, with `*` as a wildcard for when you cannot remember
-  every radical.
-- **注音 (Zhuyin, ㄅ半)** — the classic phonetic method, one character at a time: type the
-  symbols, end the syllable with a tone (**Space** is the first tone), pick with `1–9`. 標準
-  (大千) and 倚天 keyboards, switchable from the input menu. See
-  [注音 (ㄅ半)](#注音-ㄅ半) below.
-- **拼音 (Pinyin)** — builds whole phrases from pinyin without tones; `'` splits ambiguous
-  syllables, so `xi'an` gives 西安.
+- **Four input methods** — add the ones you use under Input Sources and switch with ⌃Space.
+  See [Input methods](#input-methods) for how each one types.
+  - **倉頡 (Cangjie)** — the classic radical method, with `*` as a wildcard for when you cannot
+    remember every radical.
+  - **速成 (Simplex)** — 倉頡's shorthand: just the first and last radical.
+  - **注音 (Zhuyin, ㄅ半)** — the classic phonetic method, one character at a time. 標準 (大千) and
+    倚天 keyboards.
+  - **拼音 (Pinyin)** — builds whole phrases from pinyin without tones.
 - **Candidates that learn, or stay put** — by default the characters you pick move up the list.
-  Turn **依選字習慣調整候選字順序** off in Settings and the built-in order stands, across every
-  mode and 聯想字詞 alike.
+  Turn **依選字習慣調整候選字順序** off in Settings and the built-in order stands, in all four
+  input methods and 聯想字詞 alike.
 - **Associated words (聯想字詞)** — after you commit a character, KeyKey suggests the words that
   usually follow, pickable with `1–9` or `Shift + 1–9`.
 - **繁 → 簡 and full-width punctuation** — toggle both straight from the input menu.
@@ -124,7 +124,22 @@ rm -rf ~/Library/HTTPStorages/com.dragonapp.inputmethod.yahoo-keykey
 > that exists to honor the original work and keep a KeyKey-style experience alive on modern
 > macOS.
 
-## Cangjie generation (倉頡版本)
+## Input methods
+
+Yahoo! KeyKey 2 installs **four input methods**. Each one is a separate entry under **Input
+Sources** (Chinese, Traditional), so add only the ones you use and switch between them with
+**⌃Space**.
+
+| Input method | How you type | Its own setting (設定… ▸ 輸入方式) |
+|---|---|---|
+| **倉頡** (Cangjie) | 倉頡 radicals on the letter keys; `*` is a wildcard | **倉頡版本** — 五代 or 三代 |
+| **速成** (Simplex) | the first and last radical of a character's 倉頡 code | follows **倉頡版本** |
+| **注音** (Zhuyin, ㄅ半) | 注音 symbols, then a tone — one character at a time | **注音鍵盤** — 大千 or 倚天 |
+| **拼音** (Pinyin) | pinyin without tones — whole phrases at once | — |
+
+繁 → 簡, full-width punctuation, 反查提示 and **依選字習慣調整候選字順序** apply to all four.
+
+### 倉頡 and 速成: 倉頡版本
 
 Choose the decomposition table in **設定… ▸ 輸入方式**. It drives both 倉頡 and 速成, and applies
 immediately.
@@ -147,7 +162,7 @@ and the same setting turns its learning on and off.
 Yahoo! KeyKey's *associated-phrase* ranking cannot be reproduced — that data was never
 open-sourced — so associations use Yahoo! KeyKey 2's own ordering in both modes.
 
-## 注音 (ㄅ半)
+### 注音 (ㄅ半)
 
 The **ㄅ半** method, as it has always worked: one syllable, one character. Type the 注音 symbols,
 finish the syllable with a tone, and the candidate window opens; `1–9` picks, Space and the arrow
@@ -172,6 +187,12 @@ disambiguation rules this mode does not have.
 Candidates come from the original Yahoo! KeyKey ㄅ半 table (`bpmf-ext.cin`), in its own order —
 the everyday character for a reading leads it, and there is no dictionary re-ranking on top. What
 you pick is then learned per reading, the same way 倉頡 learns per code.
+
+### 拼音 (Pinyin)
+
+Type pinyin without tones and 拼音 builds the whole phrase; `'` splits an ambiguous spot, so
+`xi'an` gives 西安. The arrow keys move between syllables, `1–9` picks the candidate for the
+syllable under the cursor and moves on to the next, and Space or Return commits the whole phrase.
 
 ## Troubleshooting
 
