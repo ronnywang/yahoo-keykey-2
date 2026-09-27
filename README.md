@@ -103,10 +103,9 @@ rm -rf ~/Library/HTTPStorages/com.dragonapp.inputmethod.yahoo-keykey
   [注音 (ㄅ半)](#注音-ㄅ半) below.
 - **拼音 (Pinyin)** — builds whole phrases from pinyin without tones; `'` splits ambiguous
   syllables, so `xi'an` gives 西安.
-- **Candidates that learn, or stay put** — in 倉頡, 速成 and 聯想字詞 the characters you pick move
-  up the list by default; turn **依選字習慣調整候選字順序** off and the built-in order stands.
-  **注音 is the exception: its order never moves** unless you opt in, because ㄅ半 is typed from
-  muscle memory.
+- **Candidates that learn, or stay put** — by default the characters you pick move up the list.
+  Turn **依選字習慣調整候選字順序** off in Settings and the built-in order stands, across every
+  mode and 聯想字詞 alike.
 - **Associated words (聯想字詞)** — after you commit a character, KeyKey suggests the words that
   usually follow, pickable with `1–9` or `Shift + 1–9`.
 - **繁 → 簡 and full-width punctuation** — toggle both straight from the input menu.
@@ -171,14 +170,8 @@ the original Yahoo! KeyKey shipped. **倚天** puts the symbols on the letters t
 disambiguation rules this mode does not have.
 
 Candidates come from the original Yahoo! KeyKey ㄅ半 table (`bpmf-ext.cin`), in its own order —
-the everyday character for a reading leads it, and there is no dictionary re-ranking on top.
-
-**That order does not move.** Unlike 倉頡 and 速成, 注音 does not learn from what you pick unless
-you switch on **注音也依選字習慣調整候選字順序** in Settings. A ㄅ半 typist works from muscle memory
-built over decades — reading, then the digit that character sits on, without looking at the
-candidate window — so a list that reorders itself is a typo, not an improvement. It is also where
-reordering shows most: ㄕˋ answers with 141 characters, and 是, 式 and 事 are all in constant use,
-so with learning on whichever you committed last keeps taking the top slot from the others.
+the everyday character for a reading leads it, and there is no dictionary re-ranking on top. What
+you pick is then learned per reading, the same way 倉頡 learns per code.
 
 ## Troubleshooting
 
@@ -237,7 +230,7 @@ swift test --package-path Packages/KeyKeyApp
 
 | Metric | Value |
 |---|---|
-| Test cases | 442 passing (334 engine, 108 app) |
+| Test cases | 436 passing (334 engine, 102 app) |
 | Line coverage | 97.8% of `KeyKeyEngine`, 100% of `KeyKeyApp` |
 | Measured on | v2.14.0, Swift 6.4 |
 

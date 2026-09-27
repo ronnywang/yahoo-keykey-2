@@ -21,16 +21,9 @@ A plain-language list of changes in each version, newest first.
 
 - **注音 candidates come from the original Yahoo! KeyKey ㄅ半 table**, in that table's own order,
   so the everyday character for a reading leads it (ㄍㄨㄛˊ → 國, ㄉㄜ˙ → 的) with no dictionary
-  re-ranking on top — the same arrangement 三代倉頡 has.
-
-- **And that order stays put.** 注音 does not adapt to what you pick unless you turn on the new
-  **注音也依選字習慣調整候選字順序** (off by default; 倉頡, 速成 and 聯想字詞 are unchanged and
-  still learn). ㄅ半 is typed from muscle memory built over decades — the reading, then the digit
-  that character sits on, without looking at the candidate window — so a list that reorders itself
-  is a typo rather than an improvement. 注音 is also where it shows most: ㄕˋ answers with 141
-  characters, and 是, 式 and 事 are all in constant use, so with learning on whichever you
-  committed last keeps taking the top slot. Switch it on and 注音 learns per reading, exactly as
-  倉頡 learns per code.
+  re-ranking on top — the same arrangement 三代倉頡 has. What you pick is then learned for that
+  reading alone, exactly as 倉頡 learns for one code: 注音, 倉頡 and 速成 each keep their own
+  history, and all of them follow **依選字習慣調整候選字順序**.
 
 - **Two keys work differently in 注音, because 注音 needs them.** On 大千 the symbols ㄝ ㄡ ㄤ ㄥ ㄦ
   sit on `,` `.` `;` `/` `-`, so those keys type 注音 rather than punctuation — ，and 。 are on

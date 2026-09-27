@@ -39,7 +39,6 @@ enum Preferences {
         static let strokeConfirmationEnabled = "strokeConfirmationEnabled"
         static let adaptiveCandidateOrderEnabled = "adaptiveCandidateOrderEnabled"
         static let zhuyinLayout = "zhuyinLayout"
-        static let zhuyinAdaptiveOrderEnabled = "zhuyinAdaptiveOrderEnabled"
     }
 
     static let minFontSize: CGFloat = 14
@@ -60,7 +59,6 @@ enum Preferences {
             Key.strokeConfirmationEnabled: false,
             Key.adaptiveCandidateOrderEnabled: true,
             Key.zhuyinLayout: ZhuyinLayout.dachen.rawValue,
-            Key.zhuyinAdaptiveOrderEnabled: false,
         ])
     }
 
@@ -130,15 +128,6 @@ enum Preferences {
     static var zhuyinLayout: ZhuyinLayout {
         get { ZhuyinLayout(rawValue: UserDefaults.standard.string(forKey: Key.zhuyinLayout) ?? "") ?? .dachen }
         set { UserDefaults.standard.set(newValue.rawValue, forKey: Key.zhuyinLayout) }
-    }
-
-    // Whether 注音 joins the adaptive ordering above. OFF by default, unlike every other mode —
-    // see AdaptiveCandidateOrder.learns(_:enabled:zhuyinEnabled:) for why ㄅ半 wants a candidate
-    // order that never moves. Subordinate to `adaptiveCandidateOrderEnabled`: with that off,
-    // nothing learns anywhere, whatever this says.
-    static var zhuyinAdaptiveOrderEnabled: Bool {
-        get { UserDefaults.standard.bool(forKey: Key.zhuyinAdaptiveOrderEnabled) }
-        set { UserDefaults.standard.set(newValue, forKey: Key.zhuyinAdaptiveOrderEnabled) }
     }
 
     // When true (the default), each candidate the user commits in 倉頡, 速成 or 聯想 is counted

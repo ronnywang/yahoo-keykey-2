@@ -191,40 +191,15 @@ enum AdaptiveCandidateOrder {
     /// order they had before any learning. The engine tests pin that ("a fresh store preserves
     /// every untrained list exactly").
     static func count(of candidate: String, in list: CandidateListKey, enabled: Bool,
-                      zhuyinEnabled: Bool,
                       stored: (String, CandidateListKey) -> Int) -> Int {
-        learns(list, enabled: enabled, zhuyinEnabled: zhuyinEnabled) ? stored(candidate, list) : 0
-    }
-
-    /// Whether learning applies to THIS list at all.
-    ///
-    /// 注音 is gated separately and is OFF by default, which is not a smaller version of the main
-    /// setting but the opposite default, for a reason particular to ㄅ半: its users type from
-    /// muscle memory built over decades — reading, then the digit that character sits on — and
-    /// they do not look at the candidate window. A list that reorders itself is not an improved
-    /// list to them, it is a typo. And 注音's lists make the reordering unusually visible: a 倉頡
-    /// code answers with two or three characters, while ㄕˋ answers with 141, several of which
-    /// (是, 式, 事) any writer uses constantly, so whichever was committed last keeps taking the
-    /// top slot from the others.
-    ///
-    /// The bundled table's own order IS the original Yahoo! KeyKey's, so leaving 注音 unlearned is
-    /// what hands a returning user the exact arrangement their fingers already know. Anyone who
-    /// wants the learning can switch it on; every other mode is unaffected either way.
-    static func learns(_ list: CandidateListKey, enabled: Bool, zhuyinEnabled: Bool) -> Bool {
-        guard enabled else { return false }
-        if case .zhuyin = list { return zhuyinEnabled }
-        return true
+        enabled ? stored(candidate, list) : 0
     }
 
     /// The usage a commit should credit: what the engine reported it is about to commit while
     /// adaptive ordering is on, nothing when off — the setting pauses counting as well as
     /// ignoring counts, so a user who turned it off is not still being counted.
-    /// Filtered per list rather than all-or-nothing, so a 注音 commit records nothing while 注音
-    /// learning is off — the setting pauses counting as well as ignoring counts, for the same
-    /// reason the main one does: a user who turned it off is not still being counted.
-    static func usageToRecord(_ pending: [CandidateUsage], enabled: Bool,
-                              zhuyinEnabled: Bool) -> [CandidateUsage] {
-        pending.filter { learns($0.list, enabled: enabled, zhuyinEnabled: zhuyinEnabled) }
+    static func usageToRecord(_ pending: [CandidateUsage], enabled: Bool) -> [CandidateUsage] {
+        enabled ? pending : []
     }
 
     // MARK: 拼音 — the per-character mechanism, unchanged from before this release
