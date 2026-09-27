@@ -96,11 +96,37 @@ final class SettingsModel {
     // input menu's 注音鍵盤 items post, so both routes to this setting behave identically.
     // Nothing in SharedResources is reloaded: the ㄅ半 table is the same table whichever keyboard
     // types it.
+    //
+    // Unlike cangjieVersion, this setting has a SECOND writer — the input menu writes Preferences
+    // directly — so this mirror can fall behind it. Two things keep that harmless. The guard
+    // compares against Preferences, not oldValue, so picking the value a stale Picker already
+    // shows is still written; comparing against oldValue made that pick a no-op, and the user could
+    // not switch back from Settings at all. And init follows .zhuyinLayoutChanged, so the Picker
+    // tracks an input-menu change even while the window is open; a value re-seeded from there
+    // already matches Preferences, so the guard stops it re-posting.
     var zhuyinLayout: ZhuyinLayout = Preferences.zhuyinLayout {
         didSet {
-            guard zhuyinLayout != oldValue else { return }
+            guard zhuyinLayout != Preferences.zhuyinLayout else { return }
             Preferences.zhuyinLayout = zhuyinLayout
             NotificationCenter.default.post(name: .zhuyinLayoutChanged, object: nil)
+        }
+    }
+
+    // Never removed: the one SettingsModel lives as long as the process (AppMenuController.shared),
+    // and the block holds it weakly.
+    @ObservationIgnored private var zhuyinLayoutObserver: NSObjectProtocol?
+
+    init() {
+        zhuyinLayoutObserver = NotificationCenter.default.addObserver(
+            forName: .zhuyinLayoutChanged, object: nil, queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            // Only when behind: a change made in this window already matches Preferences, and
+            // skipping it avoids re-entering didSet from inside its own post.
+            MainActor.assumeIsolated {
+                let current = Preferences.zhuyinLayout
+                if self.zhuyinLayout != current { self.zhuyinLayout = current }
+            }
         }
     }
 
@@ -117,12 +143,13 @@ final class SettingsModel {
     var minFontSize: Double { Double(Preferences.minFontSize) }
     var maxFontSize: Double { Double(Preferences.maxFontSize) }
 
-    // Re-seed the observation-tracked mirror properties (currently just candidateFontSize) from
+    // Re-seed the observation-tracked mirror properties (candidateFontSize, zhuyinLayout) from
     // the live Preferences. The computed forwarders above re-read Preferences on every access, so
     // they always reflect changes made elsewhere; a stored property does not. Call this before
     // showing the window so the slider matches whatever value Preferences currently holds (e.g. a
     // value migrated from an older build). No-op when already in sync (the didSet guard skips the write).
     func syncFromPreferences() {
         candidateFontSize = Double(Preferences.candidateFontSize)
+        zhuyinLayout = Preferences.zhuyinLayout
     }
 }
